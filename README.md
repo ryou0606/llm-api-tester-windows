@@ -1,486 +1,160 @@
-<div align="center">
+# LLM API Tester
 
-# 🧪 LLM API Tester
+[English](./README_EN.md) | 中文
 
-**一站式 OpenAI 兼容 API 测试平台 — 测速 · 聊天 · 圆桌讨论**
+大模型 API 测试与对比工具，带 Web 前端。
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.io)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/ryou0606/llm-api-tester?style=social)](https://github.com/ryou0606/llm-api-tester)
+## 功能
 
-<br/>
+- 🤖 **单模型测试** - 连通性、返回值、延迟、Token 用量，支持流式输出
+- ⚔️ **多模型对抗** - 同一问题发给多个模型，并排对比输出
+- 👁 **图片视觉** - 上传图片 + 文字提问，测试模型视觉理解
+- 🎤 **语音交互** - STT 语音识别 + TTS 语音合成（MiMo 优先）
+- 🔌 **中转站** - 对外暴露 OpenAI 兼容接口，供其他 Agent 调用
+- 📋 **智能粘贴** - 粘贴任意格式文本，自动识别模型配置（支持 22 家厂商）
+- 🔄 **远程模型拉取** - 从 API 自动获取可用模型列表
 
-一个轻量级、零依赖数据库的 LLM API 测试工具，支持批量测速、多模型聊天室和多模型圆桌讨论。<br/>
-兼容所有 OpenAI 格式 API —— OpenAI、DeepSeek、Claude (中转)、Gemini (中转)、Ollama、LM Studio、vLLM 等。
+## 技术栈
 
-<br/>
+| 层 | 技术 |
+|---|---|
+| 后端 | Python 3.12+ / FastAPI / SQLAlchemy / httpx |
+| 前端 | Vue 3 / Vite / Element Plus / Pinia / TypeScript |
+| 数据库 | SQLite（aiosqlite） |
+| 容器 | Docker / docker-compose |
 
-![Python](https://img.shields.io/badge/单文件部署-即开即用-ff6b6b?style=for-the-badge)
-![No DB](https://img.shields.io/badge/无需数据库-JSON存储-4ecdc4?style=for-the-badge)
-![Windows](https://img.shields.io/badge/支持打包EXE-一键运行-6c5ce7?style=for-the-badge)
+## 快速开始
 
-</div>
+### 方式一：本地开发
 
----
-
-## 📸 功能预览
-
-<table>
-<tr>
-<td width="50%">
-
-### 🗣️ 多模型圆桌讨论
-![圆桌配置](screenshots/多模型圆桌功能1.png)
-![圆桌讨论中](screenshots/多模型圆桌2.png)
-
-</td>
-<td width="50%">
-
-### 💬 多模型聊天室
-![多模型聊天](screenshots/多模型聊天（所有选中的模型参与%20会对用户的内容回复%20不会读取其他模型的内容）.png)
-
-</td>
-</tr>
-</table>
-
-> 💡 **最独特的功能：** 让多个 AI 模型围绕一个话题自由讨论，它们可以看到彼此的发言并进行回应。开启「自动模式」后，AI 们会自动进行多轮讨论，你只需要观察即可。
-
----
-
-## ✨ 功能亮点
-
-<table>
-<tr>
-<td width="50%">
-
-### 🏎️ API 批量测速
-- 多配置并发测速，TTFB / 吞吐量 / 延迟全面对比
-- 自定义 Prompt、System Prompt、温度、Top_P
-- 实时 SSE 流式推送结果，先完成先显示
-- 测速历史自动保存，支持 Excel 导出
-- 推理模型思考时间独立统计
-
-</td>
-<td width="50%">
-
-### 💬 多模型聊天室
-- 同时与多个 LLM 对话，实时对比回答质量
-- 每个 Bot 独立昵称、人设、颜色、系统提示词
-- 支持推理模型的思考过程展示
-- 流式输出，逐字渲染
-- 上下文轮数可配置
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 🗣️ 多模型圆桌讨论
-- 多个 AI 围绕同一话题自由讨论
-- 互相可见发言，交叉引用回应
-- 支持隐藏用户身份（模型分不清人和 AI）
-- 自动模式：一轮结束自动进入下一轮
-- 每个参与者独立系统提示词 + 13 种预置人设模板
-
-</td>
-<td>
-
-### 📋 提示词模板系统
-- 13 种精心设计的预置模板（批判性思维者、魔鬼代言人、哲思者等）
-- 自定义模板 CRUD，聊天室和圆桌共用
-- 下拉选择自动填充，支持手动编辑
-- 预置模板不可修改/删除，保护默认配置
-
-</td>
-</tr>
-</table>
-
-### 🔧 更多特性
-
-| 特性 | 说明 |
-|------|------|
-| 🔌 广泛兼容 | 支持所有 OpenAI 格式 API：OpenAI、DeepSeek、Claude/Gemini 中转、Ollama、LM Studio、vLLM、One API 等 |
-| 🤖 模型自动发现 | 一键获取 API 端点下所有可用模型，兼容多种响应格式 |
-| 🧠 推理模型支持 | DeepSeek-R1、QwQ 等思考链模型的推理过程独立展示 |
-| 📊 Excel 导出 | 测速结果一键导出为格式化的 `.xlsx` 文件 |
-| 💾 全量备份 | 一键导出/导入所有配置和历史记录 |
-| 🌙 暗色主题 | 护眼暗色 UI，长时间使用不疲劳 |
-| 🖥️ Windows EXE | 支持 PyInstaller 打包为单文件可执行程序 |
-| 📡 代理支持 | 每个 API 配置可独立设置 HTTP 代理 |
-| ⚡ 零数据库 | JSON 文件存储，无需安装任何数据库 |
-| 🔒 本地部署 | 数据全部留在本地，不经过任何第三方服务 |
-
----
-
-## 🚀 快速开始
-
-### 方式一：源码运行（推荐）
-
+**后端：**
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/ryou0606/llm-api-tester.git
-cd llm-api-tester
-
-# 2. 安装依赖
+cd backend
 pip install -r requirements.txt
-
-# 3. 启动
-python main.py
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-浏览器会自动打开 `http://localhost:12390`（端口自动寻找可用端口）。
+**前端：**
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### 方式二：Windows EXE
+前端开发服务器运行在 http://localhost:5173，API 请求自动代理到后端 8000 端口。
+
+### 方式二：Docker 部署
 
 ```bash
-# Windows 用户双击运行 build.bat 即可打包
-build.bat
+# 构建并启动
+docker compose up -d
 
-# 打包完成后运行
-dist\LLM-API-Tester\LLM-API-Tester.exe
+# 查看日志
+docker compose logs -f
+
+# 停止
+docker compose down
 ```
 
-### 方式三：手动启动
+后端 API 运行在 http://localhost:8000。
+
+### 方式三：生产部署
 
 ```bash
-# 指定端口启动
-uvicorn app.server:app --host 0.0.0.0 --port 8080
+# 构建前端
+cd frontend
+npm run build
 
-# 然后浏览器访问
-open http://localhost:8080
+# 启动后端（前端 dist 由 nginx 或其他 web 服务器托管）
+cd backend
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
----
-
-## 📸 功能详解
-
-### 1️⃣ API 配置管理
-
-添加你的 LLM API 端点，支持：
-
-- **Base URL**：如 `https://api.openai.com/v1`、`http://localhost:11434/v1`
-- **API Key**：留空即可访问本地模型（Ollama 等）
-- **模型发现**：点击"获取模型"自动拉取可用模型列表
-- **连接测试**：一键验证端点可达性
-- **代理设置**：每个配置可独立设置 HTTP 代理
-
-```
-支持的 API 格式：
-├── OpenAI 标准格式 (/{base}/v1/chat/completions)
-├── 已含 /v1 的 URL (自动去重)
-├── Ollama (http://localhost:11434/v1)
-├── LM Studio (http://localhost:1234/v1)
-├── vLLM / Text Generation Inference
-├── One API / New API 等中转站
-└── 任何兼容 OpenAI Chat Completions 的服务
-```
-
-### 2️⃣ API 批量测速
-
-选择多个模型配置，设置测速参数，一键开始：
-
-- **并发控制**：1-20 并发，压力测试一目了然
-- **多轮测试**：1-50 轮，消除偶然误差
-- **核心指标**：
-  - ⏱ **TTFB**（首 Token 延迟）—— 体感响应速度
-  - ⚡ **吞吐量**（tokens/s）—— 生成速度
-  - 🕐 **总耗时** —— 端到端完成时间
-  - 📊 **标准差** —— 稳定性评估
-  - 💭 **思考时间** —— 推理模型独立统计
-- **实时流式推送**：SSE 实时更新，先完成先显示
-- **历史记录**：自动保存，可回溯对比
-- **Excel 导出**：格式化表格一键下载
-
-### 3️⃣ 多模型聊天室
-
-同时与多个 AI 模型对话，横向对比回答质量：
-
-- 每个 Bot 可配置独立的昵称、人设、颜色和系统提示词
-- 所有 Bot 同时接收用户消息，并行回复
-- 推理模型展示思考过程（可折叠）
-- 实时流式输出，逐字渲染
-- 消息清空、退出聊天室等操作
-
-### 4️⃣ 多模型圆桌讨论 🗣️
-
-> **这是本项目最独特的功能。**
-
-让多个 AI 模型围绕一个话题自由讨论，它们可以看到彼此的发言并进行回应。
-
-**核心特性：**
-
-- **交叉可见**：每个参与者都能看到其他人的发言，形成真正的讨论
-- **并行发言**：所有参与者同时开始，先完成先显示
-- **轮次控制**：手动模式下，用户阅读完毕后点击"本轮结束"再进入下一轮
-- **自动模式**：开启后每轮结束自动进入下一轮，适合长时间观察
-- **追加发言**：每轮结束后可追加用户发言，引导讨论方向
-- **身份隐藏**：开启后，模型无法区分哪些是用户发言、哪些是其他 AI
-
-**参与者配置：**
-
-每个参与者可独立设置：
-- 🏷️ **昵称**：随机分配或自定义
-- 🎭 **人设**：角色定位（默认随机）
-- 🎨 **颜色**：气泡颜色区分
-- 📝 **系统提示词**：独立的系统级指令
-- 📋 **提示词模板**：13 种预置模板一键填充
-
-**预置提示词模板：**
-
-| 模板 | 描述 |
-|------|------|
-| 🔍 批判性思维者 | 审视逻辑链条，寻找漏洞和反例 |
-| 🧩 观点整合者 | 找到矛盾观点之间的联系和共识 |
-| 🌈 天马行空创意者 | 跨领域联想，提出疯狂但有价值的想法 |
-| ✂️ 简洁务实派 | 极度简洁，直击本质，不超过三句话 |
-| 📖 故事讲述者 | 用故事和案例表达观点 |
-| 😈 魔鬼代言人 | 故意站在对立面，压力测试主流观点 |
-| 🌀 哲学思辨者 | 追问本质，质疑前提假设 |
-| 😄 轻松幽默派 | 用幽默缓解紧张气氛 |
-| 📊 数据驱动分析师 | 用事实和数据支撑观点 |
-| 🚀 行动落地派 | 把讨论转化为具体行动项 |
-| 🗡️ 毒舌评论家 | 犀利直击要害，不留情面 |
-| 🌧️ 悲观主义者 | 冷静提醒各种风险和最坏情况 |
-| 🧊 冷漠旁观者 | 客观分析，指出情绪化偏差 |
-
-### 5️⃣ 历史记录与导出
-
-- **测速历史**：每次测速结果自动保存，最多 200 条
-- **圆桌历史**：圆桌讨论结束后自动保存，最多 100 条
-- **Excel 导出**：测速结果导出为格式化的 `.xlsx`，含表头样式和自动列宽
-- **全量备份**：一键导出所有配置和历史为 JSON 文件
-- **备份恢复**：导入 JSON 备份文件恢复数据
-
----
-
-## 🏗️ 项目结构
+## 项目结构
 
 ```
 llm-api-tester/
-├── main.py                          # 入口：端口发现、浏览器启动、uvicorn 启动
-├── requirements.txt                 # Python 依赖
-├── build.bat                        # Windows 一键打包脚本
-├── llm_tester.spec                  # PyInstaller 配置
-├── CHANGELOG.md                     # 更新日志
-│
-├── app/
-│   ├── __init__.py
-│   ├── server.py                    # FastAPI 应用定义、静态文件挂载、导出端点
-│   ├── models.py                    # Pydantic 数据模型
-│   │
-│   ├── routes/
-│   │   ├── configs.py               # API 配置 CRUD + 模型发现 + 连接测试
-│   │   ├── speed.py                 # 测速 SSE + 历史保存 + Excel 导出
-│   │   ├── chatroom.py              # 聊天室创建 + 消息发送 SSE
-│   │   ├── roundtable.py            # 圆桌创建 + 轮次控制 + 用户消息
-│   │   ├── history.py               # 历史记录 CRUD
-│   │   └── prompt_templates.py      # 提示词模板 CRUD（含 13 种预置）
-│   │
-│   └── services/
-│       ├── llm_client.py            # 异步 HTTP 客户端（httpx），兼容多种 API 格式
-│       ├── chat_manager.py          # 聊天室生命周期管理
-│       ├── roundtable_manager.py    # 圆桌生命周期管理
-│       ├── speed_tester.py          # 并发测速引擎
-│       └── data_store.py            # JSON 文件存储层
-│
-├── static/
-│   └── index.html                   # 单页前端（HTML + CSS + JS，无框架依赖）
-│
-└── data/                            # 运行时数据目录（自动创建）
-    ├── api_configs.json             # API 配置
-    ├── speed_history.json           # 测速历史
-    ├── roundtable_history.json      # 圆桌历史
-    └── prompt_templates.json        # 用户自定义模板
+├── backend/
+│   ├── main.py              # FastAPI 入口
+│   ├── config.py            # 全局配置
+│   ├── database.py          # 数据库连接
+│   ├── known_models.py      # 已知模型上下文窗口数据（80+ 模型）
+│   ├── adapters/            # API 适配器
+│   │   ├── base.py          # 适配器基类
+│   │   ├── openai_compat.py # OpenAI 兼容适配器
+│   │   └── registry.py      # 适配器注册中心
+│   ├── routers/             # API 路由
+│   │   ├── models.py        # 模型 CRUD
+│   │   ├── chat.py          # 单模型对话
+│   │   ├── arena.py         # 多模型对抗
+│   │   ├── audio.py         # 语音 STT/TTS
+│   │   └── relay.py         # 中转站（/v1/）
+│   └── services/            # 业务逻辑
+├── frontend/
+│   └── src/
+│       ├── views/           # 6 个页面
+│       ├── stores/          # Pinia 状态管理
+│       ├── api/             # API 调用封装
+│       └── components/      # 通用组件
+├── Dockerfile
+└── docker-compose.yml
 ```
 
----
+## API 接口
 
-## 🔌 API 接口文档
+### 内部接口（/api/）
 
-### API 配置
+| 接口 | 说明 |
+|---|---|
+| `GET/POST /api/models` | 模型配置 CRUD |
+| `POST /api/models/{id}/test` | 测试模型连接 |
+| `POST /api/models/parse` | 智能粘贴解析 |
+| `POST /api/models/fetch-remote-models` | 拉取远程模型列表 |
+| `GET /api/models/providers` | 搜索提供商建议 |
+| `POST /api/chat/send` | 单模型对话 |
+| `POST /api/chat/stream` | 单模型流式对话 |
+| `POST /api/arena/send` | 多模型对抗 |
+| `POST /api/arena/stream` | 多模型流式对抗 |
+| `POST /api/audio/stt` | 语音识别 |
+| `POST /api/audio/tts` | 语音合成 |
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `GET` | `/api/configs` | 获取所有配置 |
-| `POST` | `/api/configs` | 创建配置 |
-| `PUT` | `/api/configs/{id}` | 更新配置 |
-| `DELETE` | `/api/configs/{id}` | 删除配置 |
-| `POST` | `/api/configs/check` | 检测所有配置连通性 |
-| `GET` | `/api/combos` | 获取启用配置的模型列表 |
-| `POST` | `/api/fetch-models` | 获取端点可用模型 |
-| `POST` | `/api/test-connection` | 测试连接 |
+### 中转站接口（/v1/）
 
-### 测速
+对外暴露 OpenAI 兼容接口，其他 Agent 可直接调用：
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `POST` | `/api/speed-test` | 运行测速（SSE 流式返回） |
-| `POST` | `/api/speed-test/save` | 保存测速结果 |
-| `GET` | `/api/export/speed-excel` | 导出测速历史为 Excel |
+```bash
+# 列出可用模型
+curl http://localhost:8000/v1/models
 
-### 聊天室
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `POST` | `/api/chatroom/create` | 创建聊天室 |
-| `POST` | `/api/chatroom/message` | 发送消息（SSE 流式返回） |
-| `POST` | `/api/chatroom/{id}/stop` | 停止聊天室 |
-| `POST` | `/api/chatroom/{id}/clear` | 清空消息 |
-| `GET` | `/api/chatroom/{id}/history` | 获取聊天历史 |
-
-### 圆桌讨论
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `POST` | `/api/roundtable/create` | 创建圆桌 |
-| `POST` | `/api/roundtable/{id}/next-round` | 开始下一轮（SSE 流式返回） |
-| `POST` | `/api/roundtable/{id}/end-round` | 结束当前轮次 |
-| `POST` | `/api/roundtable/{id}/message` | 追加用户消息 |
-| `POST` | `/api/roundtable/{id}/stop` | 停止圆桌并保存 |
-| `POST` | `/api/roundtable/{id}/clear` | 清空消息 |
-| `GET` | `/api/roundtable/{id}/history` | 获取圆桌历史 |
-
-### 历史记录 & 模板
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `GET` | `/api/history?type=speed\|roundtable` | 获取历史记录 |
-| `DELETE` | `/api/history/{id}?type=...` | 删除单条记录 |
-| `DELETE` | `/api/history?type=...` | 清空某类历史 |
-| `GET` | `/api/prompt-templates` | 获取所有模板 |
-| `POST` | `/api/prompt-templates` | 创建模板 |
-| `PUT` | `/api/prompt-templates/{id}` | 更新模板 |
-| `DELETE` | `/api/prompt-templates/{id}` | 删除模板 |
-
-### 数据导出
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `GET` | `/api/export/all` | 导出所有数据（JSON） |
-| `GET` | `/api/export/backup` | 下载全量备份文件 |
-
-### SSE 事件格式
-
-测速和聊天/圆桌使用 Server-Sent Events 流式返回：
-
-```
-# 测速事件
-data: {"type":"start","config_name":"...","model":"..."}
-data: {"type":"progress","config_name":"...","model":"...","round":1,"ttfb":0.5,"speed":45.2,...}
-data: {"type":"complete","config_name":"...","model":"...","results":[...]}
-
-# 圆桌事件
-data: {"type":"round_start","round":1}
-data: {"type":"participant_start","participant_id":"...","nick":"..."}
-data: {"type":"participant_done","participant_id":"...","content":"...","ttfb":0.8,...}
-data: {"type":"round_done","round":1}
+# 对话补全
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
 ```
 
----
-
-## ⚙️ 配置说明
+## 配置说明
 
 ### 环境变量
 
-| 变量 | 说明 | 默认值 |
-|------|------|--------|
-| `LLM_TESTER_DATA_DIR` | 数据存储目录 | `./data` |
-| `LLM_TESTER_STATIC_DIR` | 静态文件目录 | `./static` |
+| 变量 | 默认值 | 说明 |
+|---|---|---|
+| `LLM_TESTER_HOST` | `0.0.0.0` | 监听地址 |
+| `LLM_TESTER_PORT` | `8000` | 监听端口 |
+| `LLM_TESTER_DEBUG` | `false` | 调试模式 |
 
-### 依赖
+### 数据目录
 
-```
-fastapi>=0.104.0          # Web 框架
-uvicorn[standard]>=0.24.0 # ASGI 服务器
-httpx>=0.25.0             # 异步 HTTP 客户端
-openpyxl>=3.1.0           # Excel 导出
-psutil>=5.9.0             # 系统信息
-pydantic>=2.0.0           # 数据校验
-python-multipart>=0.0.6   # 文件上传支持
-```
+SQLite 数据库存放在 `backend/data/` 目录下，Docker 部署通过 volume 挂载持久化。
 
----
+## 已知模型支持
 
-## 🛠️ 开发指南
+内置 80+ 模型的上下文窗口数据，添加模型时自动填充：
 
-### 本地开发
+MiMo / OpenAI / Anthropic / DeepSeek / Gemini / 智谱 GLM / 通义千问 / Moonshot / 百川 / MiniMax / 零一万物 / 阶跃星辰 / Groq / SiliconFlow / OpenRouter / Fireworks
 
-```bash
-# 安装开发依赖
-pip install -r requirements.txt
+## 许可
 
-# 启动开发服务器（自动热重载）
-uvicorn app.server:app --reload --port 12390
-
-# 前端修改后直接刷新浏览器即可（无需构建步骤）
-```
-
-### 打包为 Windows EXE
-
-```bash
-# 方式一：运行打包脚本
-build.bat
-
-# 方式二：手动打包
-pip install pyinstaller
-pyinstaller llm_tester.spec --noconfirm --clean
-# 打包完成后，将 static/ 目录复制到 dist/LLM-API-Tester/static/
-```
-
-打包产物在 `dist/LLM-API-Tester/` 目录，双击 `LLM-API-Tester.exe` 即可运行。
-
-### 添加新功能
-
-```
-1. 数据模型  → app/models.py         (定义请求/响应模型)
-2. 业务逻辑  → app/services/          (核心服务层)
-3. API 路由  → app/routes/            (FastAPI 路由)
-4. 前端界面  → static/index.html      (单文件 SPA)
-5. 注册路由  → app/server.py          (include_router)
-```
-
----
-
-## 🤝 兼容性
-
-已在以下环境测试通过：
-
-| 服务/平台 | 状态 | 备注 |
-|-----------|------|------|
-| OpenAI API | ✅ | GPT-4o, GPT-4-turbo 等 |
-| DeepSeek | ✅ | 含推理模型 R1 思考链展示 |
-| Ollama | ✅ | 本地模型，无需 API Key |
-| LM Studio | ✅ | 本地模型 |
-| vLLM | ✅ | 自部署模型 |
-| One API | ✅ | 多模型中转 |
-| New API | ✅ | 多模型中转 |
-| Cloudflare Workers AI | ✅ | 兼容 OpenAI 格式的网关 |
-| 任意 OpenAI 兼容 API | ✅ | 只要支持 `/v1/chat/completions` |
-
----
-
-## 📄 License
-
-MIT License - 自由使用、修改和分发。
-
----
-
-## 🙏 致谢
-
-- [FastAPI](https://fastapi.tiangolo.io/) - 高性能 Python Web 框架
-- [httpx](https://www.python-httpx.org/) - 现代异步 HTTP 客户端
-- [openpyxl](https://openpyxl.readthedocs.io/) - Excel 文件处理
-- [uvicorn](https://www.uvicorn.org/) - 轻量级 ASGI 服务器
-
----
-
-<div align="center">
-
-**如果这个项目对你有帮助，请给一个 ⭐ Star 支持一下！**
-
-<br/>
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ryou0606/llm-api-tester&type=Date)](https://star-history.com/#ryou0606/llm-api-tester&Date)
-
-</div>
+MIT
