@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Check Python syntax
+        run: python -m py_compile main.py && python -m py_compile app/server.py
+
+  test-imports:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Verify all imports
+        run: python -c "from app.server import app; print('✅ All imports OK')"
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pyinstaller
+      - name: Build EXE
+        run: pyinstaller llm_tester.spec --noconfirm --clean
+      - name: Copy static files
+        run: |
+          xcopy /E /Y /Q "static\*" "dist\LLM-API-Tester\static\"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LLM-API-Tester-win64
+          path: dist/LLM-API-Tester/
