@@ -4,6 +4,11 @@
 
 **All-in-One OpenAI-Compatible API Testing Platform — Benchmark · Chat · Roundtable Discussion**
 
+<p>
+  <a href="./README.md"><img src="https://img.shields.io/badge/🇨🇳_中文-README-blue?style=for-the-badge" alt="中文"></a>
+  <a href="./README_EN.md"><img src="https://img.shields.io/badge/🇺🇸_English-README-green?style=for-the-badge" alt="English"></a>
+</p>
+
 [![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.io)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
